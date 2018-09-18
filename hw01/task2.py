@@ -8,6 +8,10 @@ import numpy as np
 
 dataset_root = "./FashionMNIST"
 
+torch.manual_seed(42)
+np.random.seed(239)
+torch.cuda.manual_seed(179)
+
 batch_size = 100
 n_classes = 10
 
@@ -45,8 +49,8 @@ class Net(nn.Module):
         layer3 = channels2 * 7 * 7  # (considering the initial size to be 28x28, and two 2x2 maxPoolings)
         layer4 = 64
 
-        self.conv1 = nn.Conv2d(in_channels=1, out_channels=channels1, kernel_size=kernel_size, padding=padding)
-        self.conv2 = nn.Conv2d(in_channels=channels1, out_channels=channels2, kernel_size=kernel_size, padding=padding)
+        self.conv1 = nn.Conv2d(1, channels1, kernel_size, padding=padding)
+        self.conv2 = nn.Conv2d(channels1, channels2, kernel_size, padding=padding)
         self.squeeze = lambda x: x.view(-1, layer3)
         self.linear1 = nn.Linear(layer3, layer4)
         self.linear2 = nn.Linear(layer4, n_classes)
