@@ -98,7 +98,7 @@ def train(net, n_epochs):
         tl = total_loss(train_loader)
         train_losses.append(tl)
         test_losses.append(total_loss(test_loader))
-        print("train loss on the epoch {}: {}".format(i + 1, tl))
+        print("train loss on the epoch {}: {:.3f}".format(i + 1, tl))
     plt.plot(train_losses, label="Train loss")
     plt.plot(test_losses, label="Test loss")
     plt.show()
@@ -114,4 +114,4 @@ for i in range(n_classes):
     true_positive = ((output == i) & (labels == i)).sum().double().item()
     i_class = (output == i).sum().double().item()
     precision = true_positive / i_class
-    print("Precision for the class {}: {}".format(i, precision))
+    print("Precision for the class {}: {:.3f}".format(i, precision))
