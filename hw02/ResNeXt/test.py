@@ -1,7 +1,8 @@
 import torch
-from torch.utils.data import ConcatDataset, TensorDataset
-from trainer import Trainer
-from resnext import resnext34
+from torch.utils.data import TensorDataset
+
+from ResNeXt.resnext import resnext34
+from ResNeXt.trainer import Trainer
 
 
 def test_resnext34():
