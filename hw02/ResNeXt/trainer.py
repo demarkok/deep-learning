@@ -31,7 +31,6 @@ class Trainer:
                 loss = self.loss_function(self.model(batch_input), batch_labels)
                 loss.backward()
                 self.optimizer.step()
-            # train_losses.append(total_loss(train_loader))
             writer.add_scalar('train loss', total_loss(train_loader))
             if test_data is not None:
                 writer.add_scalars('test loss', total_loss(test_loader))
