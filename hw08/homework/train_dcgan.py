@@ -5,6 +5,7 @@ import os
 import torch
 import torchvision.datasets as datasets
 from torch.optim import Adam
+from torch.optim import SGD
 from torchvision import transforms
 
 from dcgan.dcgan import DCGenerator, DCDiscriminator
@@ -63,9 +64,9 @@ def main():
                                                                                                       config.image_channels)
 
     trainer = DCGANTrainer(generator=generator, discriminator=discriminator,
-                           optimizer_d=Adam(discriminator.parameters(), lr=0.0002, betas=(0.5, 0.999)),
+                           optimizer_d=SGD(discriminator.parameters(), lr=0.001),
                            optimizer_g=Adam(generator.parameters(), lr=0.0002, betas=(0.5, 0.999)),
-                           latent_size=config.latent_dim)
+                           latent_size=config.latent_dim, device='cpu')
 
     trainer.train(dataloader, config.epochs, config.n_show_samples, config.show_img_every)
 
