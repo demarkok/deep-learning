@@ -19,9 +19,9 @@ def get_config():
     parser.add_argument('--log-name', type=str, default='train_dcgan.log')
     parser.add_argument('--no-cuda', action='store_true', default=False,
                         help='enables CUDA training')
-    parser.add_argument('--batch-size', type=int, default=256,
+    parser.add_argument('--batch-size', type=int, default=128,
                         help='input batch size for training')
-    parser.add_argument('--epochs', type=int, default=30,
+    parser.add_argument('--epochs', type=int, default=100,
                         help='number of epochs to train ')
     parser.add_argument('--image-size', type=int, default=32,
                         help='size of images to generate')
