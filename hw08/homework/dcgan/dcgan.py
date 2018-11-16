@@ -48,17 +48,18 @@ class DCDiscriminator(nn.Module):
             if bn:
                 block.append(nn.BatchNorm2d(out_filters, 0.8))
             return block
-            self.model = nn.Sequential(
-                *discriminator_block(image_channels, 32, bn=False),
-                *discriminator_block(32, 64),
-                *discriminator_block(64, 128),
-                *discriminator_block(128, 256),
-            )
 
+        self.model = nn.Sequential(
+            *discriminator_block(image_channels, 32, bn=False),
+            *discriminator_block(32, 64),
+            *discriminator_block(64, 128),
+            *discriminator_block(128, 256),
+
+        )
 
         # The height and width of downsampled image
         ds_size = image_size // 2**4
-        self.adv_layer = nn.Sequential( nn.Linear(256 * ds_size**2, 1),
+        self.adv_layer = nn.Sequential( nn.Linear(256*ds_size**2, 1),
                                         nn.Sigmoid())
 
     def forward(self, img):
