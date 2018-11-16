@@ -9,8 +9,6 @@ import torch.utils.data
 import torchvision.utils as vutils
 from tensorboardX import SummaryWriter
 
-from homework import metric
-
 
 class DCGANTrainer:
 
@@ -64,7 +62,9 @@ class DCGANTrainer:
                 output = self.net_d(real)
                 err_d_real = criterion(output, target)
 
-                noise = torch.randn(real.size()[0], self.latent_size, 1, 1, device=self.device)
+
+                print(real.size()[0])
+                noise = torch.randn(real.size()[0], self.latent_size, device=self.device)
                 fake = self.net_g(noise)
 
                 if global_step % show_img_every == 0:
@@ -95,15 +95,15 @@ class DCGANTrainer:
                 self.writer.add_scalar('data/loss_generator', err_g, global_step)
 
                 self.net_g.eval()
-                if global_step % log_metrics_every == 0:
-                    image_size = real.shape[-1]
-                    report_dict = metric.compute_metrics(metrics_dataset,
-                                                         image_size=image_size,
-                                                         metrics_root=Path(self.metric_dir),
-                                                         batch_size=dataloader.batch_size, netG=self.net_g)
-
-                    for mtrc in metrics_to_log:
-                        self.writer.add_scalar(f'data/{mtrc}', report_dict[mtrc], global_step)
+                # if global_step % log_metrics_every == 0:
+                #     image_size = real.shape[-1]
+                #     report_dict = metric.compute_metrics(metrics_dataset,
+                #                                          image_size=image_size,
+                #                                          metrics_root=Path(self.metric_dir),
+                #                                          batch_size=dataloader.batch_size, netG=self.net_g)
+                #
+                #     for mtrc in metrics_to_log:
+                #         self.writer.add_scalar(f'data/{mtrc}', report_dict[mtrc], global_step)
                 self.net_g.train()
                 global_step += 1
 
