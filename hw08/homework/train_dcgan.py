@@ -11,7 +11,6 @@ from dcgan.dcgan import DCGenerator, DCDiscriminator
 from dcgan.trainer import DCGANTrainer
 
 
-
 def get_config():
     parser = argparse.ArgumentParser(description='Training DCGAN on CIFAR10')
 
@@ -38,7 +37,6 @@ def get_config():
 
 
 def main():
-
     config = get_config()
 
     if not os.path.exists(config.log_root):
@@ -52,7 +50,6 @@ def main():
             logging.StreamHandler()],
         level=logging.INFO)
 
-
     transform = transforms.Compose([transforms.Scale(config.image_size), transforms.ToTensor(),
                                     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
     dataset = datasets.CIFAR10(root=config.data_root, download=True,
@@ -61,7 +58,9 @@ def main():
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=config.batch_size, shuffle=True,
                                              num_workers=4, pin_memory=True)
 
-    discriminator, generator = DCDiscriminator(config.image_size, config.image_channels), DCGenerator(config.image_size, config.latent_dim, config.image_channels)
+    discriminator, generator = DCDiscriminator(config.image_size, config.image_channels), DCGenerator(config.image_size,
+                                                                                                      config.latent_dim,
+                                                                                                      config.image_channels)
 
     trainer = DCGANTrainer(generator=generator, discriminator=discriminator,
                            optimizer_d=Adam(discriminator.parameters(), lr=0.0002, betas=(0.5, 0.999)),
