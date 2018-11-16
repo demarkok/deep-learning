@@ -66,7 +66,7 @@ def main():
     trainer = DCGANTrainer(generator=generator, discriminator=discriminator,
                            optimizer_d=SGD(discriminator.parameters(), lr=0.001),
                            optimizer_g=Adam(generator.parameters(), lr=0.0002, betas=(0.5, 0.999)),
-                           latent_size=config.latent_dim, device='cpu')
+                           latent_size=config.latent_dim)
 
     trainer.train(dataloader, config.epochs, config.n_show_samples, config.show_img_every)
 
