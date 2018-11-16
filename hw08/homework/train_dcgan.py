@@ -7,8 +7,8 @@ import torchvision.datasets as datasets
 from torch.optim import Adam
 from torchvision import transforms
 
-from homework.dcgan.dcgan import DCGenerator, DCDiscriminator
-from homework.dcgan.trainer import DCGANTrainer
+from dcgan.dcgan import DCGenerator, DCDiscriminator
+from dcgan.trainer import DCGANTrainer
 
 
 
@@ -109,7 +109,7 @@ def main():
     trainer = DCGANTrainer(generator=generator, discriminator=discriminator,
                            optimizer_d=Adam(discriminator.parameters(), lr=0.0002, betas=(0.5, 0.999)),
                            optimizer_g=Adam(generator.parameters(), lr=0.0002, betas=(0.5, 0.999)),
-                           metrics_dir='metrics', device='cpu', latent_size=config.latent_dim)
+                           metrics_dir='metrics', latent_size=config.latent_dim)
 
     trainer.train(dataloader, config.epochs, config.n_show_samples, config.show_img_every, config.log_metrics_every)
 
