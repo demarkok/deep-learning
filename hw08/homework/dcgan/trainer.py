@@ -1,6 +1,5 @@
 import logging
 import os
-from pathlib import Path
 
 import torch
 import torch.nn as nn
@@ -45,8 +44,7 @@ class DCGANTrainer:
         torch.save(self.net_g.state_dict(), os.path.join(self.save_root, f'generator_epoch_{epoch}.pt'))
         torch.save(self.net_d.state_dict(), os.path.join(self.save_root, f'discriminator_epoch_{epoch}.pt'))
 
-    def train(self, dataloader, n_epoch=25, n_show_samples=8, show_img_every=10, log_metrics_every=100,
-              metrics_dataset='cifar10', metrics_to_log=('inception-score', 'mode-score', 'fid')):
+    def train(self, dataloader, n_epoch=25, n_show_samples=8, show_img_every=10):
         criterion = nn.BCELoss()
 
         global_step = 0
@@ -62,8 +60,6 @@ class DCGANTrainer:
                 output = self.net_d(real)
                 err_d_real = criterion(output, target)
 
-
-                print(real.size()[0])
                 noise = torch.randn(real.size()[0], self.latent_size, device=self.device)
                 fake = self.net_g(noise)
 
@@ -95,15 +91,6 @@ class DCGANTrainer:
                 self.writer.add_scalar('data/loss_generator', err_g, global_step)
 
                 self.net_g.eval()
-                # if global_step % log_metrics_every == 0:
-                #     image_size = real.shape[-1]
-                #     report_dict = metric.compute_metrics(metrics_dataset,
-                #                                          image_size=image_size,
-                #                                          metrics_root=Path(self.metric_dir),
-                #                                          batch_size=dataloader.batch_size, netG=self.net_g)
-                #
-                #     for mtrc in metrics_to_log:
-                #         self.writer.add_scalar(f'data/{mtrc}', report_dict[mtrc], global_step)
                 self.net_g.train()
                 global_step += 1
 
