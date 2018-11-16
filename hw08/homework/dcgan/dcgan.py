@@ -5,9 +5,9 @@ class DCGenerator(nn.Module):
 
     def __init__(self, image_size, latent_dim, image_channels):
         super(DCGenerator, self).__init__()
-        self.init_size = image_size // 8
+        self.init_size = image_size // 4
 
-        self.init_layers = 256
+        self.init_layers = 128
 
         self.l1 = nn.Sequential(nn.Linear(latent_dim, self.init_layers * self.init_size**2))
 
@@ -21,14 +21,10 @@ class DCGenerator(nn.Module):
             nn.Upsample(scale_factor=2),
             nn.Conv2d(self.init_layers, self.init_layers // 2, 3, stride=1, padding=1),
 
+
             nn.BatchNorm2d(self.init_layers // 2, 0.8),
             nn.LeakyReLU(0.2, inplace=True),
-            nn.Upsample(scale_factor=2),
-            nn.Conv2d(self.init_layers // 2, self.init_layers // 4, 3, stride=1, padding=1),
-
-            nn.BatchNorm2d(self.init_layers // 4, 0.8),
-            nn.LeakyReLU(0.2, inplace=True),
-            nn.Conv2d(self.init_layers // 4, image_channels, 3, stride=1, padding=1),
+            nn.Conv2d(self.init_layers // 2, image_channels, 3, stride=1, padding=1),
             nn.Tanh()
         )
 
@@ -54,15 +50,15 @@ class DCDiscriminator(nn.Module):
             return block
 
         self.model = nn.Sequential(
-            *discriminator_block(image_channels, 16, bn=False),
-            *discriminator_block(16, 32),
-            *discriminator_block(32, 64),
+            *discriminator_block(image_channels, 64, bn=False),
             *discriminator_block(64, 128),
+            *discriminator_block(128, 256),
+            *discriminator_block(256, 512),
         )
 
         # The height and width of downsampled image
         ds_size = image_size // 2**4
-        self.adv_layer = nn.Sequential( nn.Linear(128*ds_size**2, 1),
+        self.adv_layer = nn.Sequential( nn.Linear(512*ds_size**2, 1),
                                         nn.Sigmoid())
 
     def forward(self, img):

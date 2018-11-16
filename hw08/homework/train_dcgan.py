@@ -22,7 +22,7 @@ def get_config():
                         help='enables CUDA training')
     parser.add_argument('--batch-size', type=int, default=128,
                         help='input batch size for training')
-    parser.add_argument('--epochs', type=int, default=100,
+    parser.add_argument('--epochs', type=int, default=30,
                         help='number of epochs to train ')
     parser.add_argument('--image-size', type=int, default=32,
                         help='size of images to generate')
@@ -64,7 +64,7 @@ def main():
                                                                                                       config.image_channels)
 
     trainer = DCGANTrainer(generator=generator, discriminator=discriminator,
-                           optimizer_d=SGD(discriminator.parameters(), lr=0.001),
+                           optimizer_d=Adam(generator.parameters(), lr=0.0002, betas=(0.5, 0.999)),
                            optimizer_g=Adam(generator.parameters(), lr=0.0002, betas=(0.5, 0.999)),
                            latent_size=config.latent_dim)
 
