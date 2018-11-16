@@ -64,7 +64,7 @@ def main():
                                                                                                       config.image_channels)
 
     trainer = DCGANTrainer(generator=generator, discriminator=discriminator,
-                           optimizer_d=Adam(generator.parameters(), lr=0.0002, betas=(0.5, 0.999)),
+                           optimizer_d=SGD(discriminator.parameters(), lr=0.0002),
                            optimizer_g=Adam(generator.parameters(), lr=0.0002, betas=(0.5, 0.999)),
                            latent_size=config.latent_dim)
 
