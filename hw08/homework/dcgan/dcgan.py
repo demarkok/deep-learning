@@ -6,8 +6,6 @@ class DCGenerator(nn.Module):
     def __init__(self, image_size, latent_dim, image_channels):
         super(DCGenerator, self).__init__()
 
-        print(latent_dim)
-
         self.init_size = image_size // 4
         self.l1 = nn.Sequential(nn.Linear(latent_dim, 128*self.init_size**2))
 
@@ -26,7 +24,6 @@ class DCGenerator(nn.Module):
         )
 
     def forward(self, z):
-        print(z.size())
         out = self.l1(z)
         out = out.view(out.shape[0], 128, self.init_size, self.init_size)
         img = self.conv_blocks(out)
