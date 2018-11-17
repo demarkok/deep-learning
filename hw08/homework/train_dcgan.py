@@ -59,9 +59,7 @@ def main():
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=config.batch_size, shuffle=True,
                                              num_workers=4, pin_memory=True)
 
-    discriminator, generator = DCDiscriminator(config.image_size, config.image_channels), DCGenerator(config.image_size,
-                                                                                                      config.latent_dim,
-                                                                                                      config.image_channels)
+    discriminator, generator = DCDiscriminator(config.image_channels), DCGenerator(config.latent_dim, config.image_channels)
 
     trainer = DCGANTrainer(generator=generator, discriminator=discriminator,
                            optimizer_d=Adam(discriminator.parameters(), lr=0.0002, betas=(0.5, 0.999)),

@@ -11,7 +11,7 @@ from tensorboardX import SummaryWriter
 
 class DCGANTrainer:
 
-    def __init__(self, discriminator, generator, optimizer_d, optimizer_g, latent_size=100,
+    def __init__(self, discriminator, generator, optimizer_d, optimizer_g, latent_size,
                  device='cuda', metrics_dir='metrics', save_root='ckpt', log_dir=None):
         self.net_g = generator
         self.net_d = discriminator
@@ -60,7 +60,7 @@ class DCGANTrainer:
                 output = self.net_d(real)
                 err_d_real = criterion(output, target)
 
-                noise = torch.randn(real.size()[0], self.latent_size, device=self.device)
+                noise = torch.randn(real.size()[0], self.latent_size, 1, 1, device=self.device)
                 fake = self.net_g(noise)
 
                 if global_step % show_img_every == 0:
