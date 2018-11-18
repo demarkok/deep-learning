@@ -10,7 +10,7 @@ class Trainer:
 
     def __init__(self, model, train_loader, test_loader, optimizer,
                  loss_function, device='cuda'):
-        self.model = model
+        self.model = model.to(device)
         self.train_loader = train_loader
         self.test_loader = test_loader
         self.optimizer = optimizer
