@@ -5,10 +5,12 @@ from torch.nn import functional as F  # noqa: F401
 
 
 class VAE(nn.Module):
-    def __init__(self, image_size=28, enc_hidden=400,
+    def __init__(self, image_size=32, image_channels=3, enc_hidden=400,
                  latent_size=20, dec_hidden=400):
         super().__init__()
         self.latent_size = latent_size
+        self.image_size = image_size
+        self.image_channels = image_channels
 
         self.fc1 = nn.Linear(image_size * image_size, enc_hidden)
         self.fc21 = nn.Linear(enc_hidden, latent_size)
@@ -33,13 +35,13 @@ class VAE(nn.Module):
         return F.sigmoid(self.fc4(h3))
 
     def forward(self, x):
-        mu, logvar = self.encode(x.view(-1, 784))
+        mu, logvar = self.encode(x.view(-1, self.image_size ** 2))
         latent = self.reparameterize(mu, logvar)
         return self.decode(latent), mu, logvar
 
     def embed(self, x):
         with torch.no_grad():
-            mu, logvar = self.encode(x.view(-1, 784))
+            mu, logvar = self.encode(x.view(-1, self.image_size ** 2))
             z = self.reparameterize(mu, logvar)
         return z
 
@@ -51,7 +53,8 @@ def loss_function(recon_x, x, mu, logvar):
     https://arxiv.org/abs/1312.6114
     0.5 * sum(1 + log(sigma^2) - mu^2 - sigma^2)
     """
-    bce = F.binary_cross_entropy(recon_x, x.view(-1, 784), size_average=False)
+
+    bce = F.binary_cross_entropy(recon_x, x.view(x.size()[0] * x.size()[1], -1), size_average=False)
     kld = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
 
     return bce + kld

@@ -9,7 +9,7 @@ from tensorboardX import SummaryWriter
 class Trainer:
 
     def __init__(self, model, train_loader, test_loader, optimizer,
-                 loss_function, device='cpu'):
+                 loss_function, device='cuda'):
         self.model = model
         self.train_loader = train_loader
         self.test_loader = test_loader
@@ -23,8 +23,14 @@ class Trainer:
         epoch_loss = 0
 
         for batch_idx, (data, _) in enumerate(self.train_loader):
-            # TODO your code here
-            train_loss = None
+
+            data = data.to(self.device)
+
+            self.optimizer.zero_grad()
+            recon_data, mu, logvar = self.model(data)
+            train_loss = self.loss_function(recon_data, data, mu, logvar)
+            train_loss.backward()
+
             epoch_loss += train_loss
             norm_train_loss = train_loss / len(data)
 
@@ -50,15 +56,21 @@ class Trainer:
                                scalar_value=epoch_loss,
                                global_step=epoch)
 
-    def test(self, epoch, batch_size, log_interval):
+    def test(self, epoch, batch_size, log_interval, show_img_every=10, n_show_samples=8):
         self.model.eval()
         test_epoch_loss = 0
 
         for batch_idx, (data, _) in enumerate(self.test_loader):
-            # TODO your code here
+            data = data.to(self.device)
 
-            test_loss = None
+            recon_data, mu, logvar = self.model(data)
+            recon_data = recon_data.view(-1, self.model.image_channels, self.model.image_size, self.model.image_size)
+
+            test_loss = self.loss_function(recon_data, data, mu, logvar)
             test_epoch_loss += test_loss
+
+            batches_per_epoch_test = len(self.test_loader.dataset) // batch_size
+            global_step = batches_per_epoch_test * (epoch - 1) + batch_idx
 
             if batch_idx % log_interval == 0:
                 msg = 'Test Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
@@ -68,21 +80,26 @@ class Trainer:
                     test_loss / len(data))
                 logging.info(msg)
 
-                batches_per_epoch_test = len(self.test_loader.dataset) // batch_size
                 self.writer.add_scalar(tag='data/test_loss',
                                        scalar_value=test_loss / len(data),
-                                       global_step=batches_per_epoch_test * (epoch - 1) + batch_idx)
+                                       global_step=global_step)
+
+            if batch_idx % show_img_every == 0:
+                self.plot_generated(data, recon_data, step=global_step, n_show_samples=n_show_samples)
 
         test_epoch_loss /= len(self.test_loader.dataset)
         logging.info('====> Test set loss: {:.4f}'.format(test_epoch_loss))
         self.writer.add_scalar(tag='data/test_epoch_loss',
                                scalar_value=test_epoch_loss,
                                global_step=epoch)
-        self.plot_generated(epoch, batch_size)
 
-    def plot_generated(self, epoch, batch_size):
-        # TODO your code here
-        pass
+    def plot_generated(self, data, recon_data, step, n_show_samples):
+
+        x = vutils.make_grid(recon_data[:n_show_samples], normalize=True, scale_each=True)
+        self.writer.add_image('img/recon', x, step)
+
+        y = vutils.make_grid(data[:n_show_samples], normalize=True, scale_each=True)
+        self.writer.add_image('img/orig', y, step)
 
     def save(self, checkpoint_path):
         dir_name = os.path.dirname(checkpoint_path)
