@@ -70,7 +70,7 @@ class Trainer:
             test_epoch_loss += test_loss
 
             batches_per_epoch_test = len(self.test_loader.dataset) // batch_size
-            global_step = batches_per_epoch_test * (epoch - 1) + batch_idx
+            global_step = batches_per_epoch_test * epoch + batch_idx
 
             if batch_idx % log_interval == 0:
                 msg = 'Test Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
