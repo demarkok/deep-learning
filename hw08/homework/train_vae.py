@@ -21,7 +21,7 @@ def get_config():
                         help='enables CUDA training')
     parser.add_argument('--batch-size', type=int, default=128,
                         help='input batch size for training')
-    parser.add_argument('--epochs', type=int, default=100,
+    parser.add_argument('--epochs', type=int, default=3500,
                         help='number of epochs to train ')
     parser.add_argument('--image-size', type=int, default=32,
                         help='size of images to generate')
